@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Reports</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Zachary Welch">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/kabu.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <style>
+      .danger { color: #ee6565; }
+      .success { color: #56b881; }
+      .strikethrough { text-decoration: line-through; }
+      .reveal h3,
+      .reveal h6,
+      section[data-markdown] h6 { text-transform: none; }
+      .block { display: block; }
+      .large { font-size: 200% !important; }
+      .reveal pre { background: #3f3f3f; }
+      mark.fragment { background: transparent; color: inherit; }
+      .reveal .slide-background.contain { background-size: contain; }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+        <section>
+          <h1>Reporting</h1>
+          <!-- <h3></h3> -->
+          <p>
+            <small>by <a href="mailto:zac@callrail.com">zachary welch</a> / <a href="http://cb-kabu.herokuapp.com/team.html">wannabe hokage</a></small>
+          </p>
+          <aside class='notes'>
+            for those unfamiliar...for those who have tried to forget
+          </aside>
+        </section>
+
+        <section>
+          <h3>Topics</h3>
+          <ol>
+            <li>Walkthrough</li>
+            <li>Generating reports</li>
+            <li>Supporting different formats</li>
+            <li>STI behind reports</li>
+            <li>Background processing</li>
+          </ol>
+          <aside class='notes'>
+            for those unfamiliar...for those who have tried to forget
+          </aside>
+        </section>
+
+        <section data-background="#3887be" data-background-transition="zoom">
+          <h2>Walkthrough</h2>
+        </section>
+
+        <section>
+          <section data-transition='none'>
+            <img data-src="img/dashboard.png">
+          </section>
+          <section data-transition='none'>
+            <img data-src="img/tables.png">
+          </section>
+          <section data-transition='none'>
+            <img data-src="img/charts.png">
+          </section>
+          <section data-transition='none'>
+            <img data-src="img/filters.png">
+          </section>
+          <section data-transition='none'>
+            <img data-src="img/export.png">
+          </section>
+        </section>
+
+        <section>
+          <section data-transition='none'>
+            <img data-src="img/routes.png">
+          </section>
+          <section data-transition='none'>
+            <img data-src="img/routes-highlighted.png">
+          </section>
+        </section>
+
+        <section>
+          <section data-transition='none'>
+            <img data-src="img/controller.png">
+          </section>
+          <section data-transition='none'>
+            <img data-src="img/controller-highlighted.png">
+          </section>
+        </section>
+
+        <section>
+          <section data-transition='none'>
+            <img data-src="img/representation.png">
+          </section>
+          <section data-transition='none'>
+            <img data-src="img/representation-highlighted.png">
+          </section>
+        </section>
+
+        <section>
+          <section data-transition='none'>
+            <img data-src="img/template.png">
+          </section>
+          <section data-transition='none'>
+            <img data-src="img/template-highlighted.png">
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <img data-src="img/delayed.png">
+          </section>
+          <section>
+            <img data-src="img/worker.png">
+          </section>
+        </section>
+
+        <section data-background="https://media.giphy.com/media/IZKuUgbb8g0Yo/giphy.gif">
+          <aside class='notes'>
+          </aside>
+        </section>
+
+        <section data-background="#3887be" data-background-transition="zoom">
+          <h2>Getting started</h2>
+        </section>
+
+        <section data-background="#418B61" data-background-transition="zoom">
+          <h2>Generating a report</h2>
+        </section>
+
+        <section>
+          <section>
+<pre>
+<code data-trim data-noescape>
+> rails generate report Reports::Activity
+</code>
+<code data-trim data-noescape class='fragment'>
+create  app/models/reports/activity.rb
+create  app/decorators/reports/activity_decorator.rb
+create  spec/decorators/reports/activity_decorator_spec.rb
+create  app/controllers/reports/activities_controller.rb
+create  spec/controllers/reports/activities_controller_spec.rb
+create  app/views/reports/activities/show.json.jbuilder
+create  app/views/reports/activities/show.pdf.erb
+insert  config/routes.rb
+</code>
+</pre>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ###### Namespaces
+              ```console
+              > rails generate report Reports::Acquisition::UsageByNumber
+              ```
+            </script>
+          </section>
+        </section>
+
+        <section data-background="#418B61" data-background-transition="zoom">
+          <h2>Reports as singular resources</h2>
+        </section>
+
+        <section>
+          <section>
+<pre>
+<code data-trim data-noescape>
+> rails generate report Reports::Activity
+</code>
+<code data-trim data-noescape>
+create  app/models/reports/activity.rb
+create  app/decorators/reports/activity_decorator.rb
+create  spec/decorators/reports/activity_decorator_spec.rb
+create  app/controllers/reports/activities_controller.rb
+create  spec/controllers/reports/activities_controller_spec.rb
+create  app/views/reports/activities/show.json.jbuilder
+create  app/views/reports/activities/show.pdf.erb
+insert  <mark>config/routes.rb</mark>
+</code>
+</pre>
+          </section>
+          <section>
+<pre>
+<code data-trim data-noescape>
+namespace :reports do
+  # other reports...
+  <mark>resource</mark> :activity, only: [:show], concerns: [:taskable]
+end
+</code>
+<code data-trim data-noescape class='fragment'>
+> rake routes
+    GET /a/:agency_id/reports/<mark>activity</mark>(.:format)
+</code>
+</pre>
+          </section>
+
+        </section>
+
+
+        <section data-background="#418B61" data-background-transition="zoom">
+          <h2>Supporting different formats</h2>
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+> rails generate report Reports::Activity
+</code>
+<code data-trim data-noescape>
+create  app/models/reports/activity.rb
+create  app/decorators/reports/activity_decorator.rb
+create  spec/decorators/reports/activity_decorator_spec.rb
+create  <mark>app/controllers/reports/activities_controller.rb</mark>
+create  spec/controllers/reports/activities_controller_spec.rb
+create  <mark>app/views/reports/activities/show.json.jbuilder</mark>
+create  <mark>app/views/reports/activities/show.pdf.erb</mark>
+insert  config/routes.rb
+</code>
+</pre>
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+class Reports::ActivitiesController < ReportsController
+  before_action :set_report, only: :show
+
+  def show
+    <mark>respond_with</mark>(@report)
+  end
+
+  private
+
+  def set_report
+    @report = Reports::Activity.new(report_params).decorate
+    authorize! :read, @report
+  end
+end</code></pre>
+        </section>
+
+        <section>
+
+          <section>
+            <h6>show.json.jbuilder</h6>
+<pre>
+<code data-trim data-noescape>
+json.extract! @report, :total_calls
+
+json.calls @report.calls do |call|
+  json.extract! call, :id, :number, :caller
+  json.url call_url(call, format: :json)
+end</code></pre>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###### show.html.erb
+              ```html
+              <tr ng-repeat="calls in report.calls">
+                <td>{{call.id}}</td>
+                <td>{{call.number}}</td>
+                <td>{{call.caller}}</td>
+              </tr>
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###### show.pdf.erb
+              ```html
+              <tr>
+                <td><%= call.id %></td>
+                <td><%= call.number %></td>
+                <td><%= call.caller %></td>
+              </tr>
+              ```
+            </script>
+          </section>
+
+          <section data-markdown>
+            <script type="text/template">
+              ###### show.csv.erb
+              ```erb
+              <%- headers = ['ID', 'Number', 'Caller'] -%>
+              <%= CSV.generate_line headers %>
+              <%- @report.calls.each do |call| -%>
+              <%= CSV.generate_line([call.id, call.number, call.caller]) -%>
+              <%- end -%>
+              ```
+            </script>
+          </section>
+
+        </section>
+
+        <section data-background="#418B61" data-background-transition="zoom">
+          <h2>Single Table Inheritance (STI)</h2>
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+> rails generate report Reports::Activity
+</code>
+<code data-trim data-noescape>
+create  <mark>app/models/reports/activity.rb</mark>
+create  <mark>app/decorators/reports/activity_decorator.rb</mark>
+create  spec/decorators/reports/activity_decorator_spec.rb
+create  app/controllers/reports/activities_controller.rb
+create  spec/controllers/reports/activities_controller_spec.rb
+create  app/views/reports/activities/show.json.jbuilder
+create  app/views/reports/activities/show.pdf.erb
+insert  config/routes.rb
+</code>
+</pre>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ###### One model per report
+            ```ruby
+            class Reports::Activity < Report
+              def calls
+                @calls ||= Call.where(agency: agency)
+              end
+
+              # add methods or domain logic for your report
+            end
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ###### Decorators and aggregating information
+            ```ruby
+            class Reports::ActivityDecorator < ReportDecorator
+              def total_calls
+                calls.size
+              end
+            end
+            ```
+          </script>
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+class Reports::ActivitiesController < ReportsController
+  before_action :set_report, only: :show
+
+  def show
+    respond_with(@report)
+  end
+
+  private
+
+  def set_report
+    @report = Reports::Activity.new(report_params).<mark>decorate</mark>
+    authorize! :read, @report
+  end
+end</code></pre>
+        </section>
+
+        <section data-background="#418B61" data-background-transition="zoom">
+          <h2>Background processing</h2>
+        </section>
+
+        <section data-background-image='img/background-processing-reports.png' class='contain'>
+        </section>
+
+        <section data-background-image='img/background-processing-reports-highlighted1.png' class='contain' data-background-transition="none">
+        </section>
+
+        <section data-background-image='img/background-processing-reports-highlighted2.png' class='contain' data-background-transition="none">
+        </section>
+
+        <section data-background-image='img/background-processing-reports-highlighted3.png' class='contain' data-background-transition="none">
+        </section>
+
+        <section data-background-image='img/background-processing-reports-highlighted4.png' class='contain' data-background-transition="none">
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+namespace :reports do
+  # other reports...
+  resource :activity, only: [:show], <mark>concerns: [:taskable]</mark>
+end
+</code>
+<code data-trim data-noescape class='fragment'>
+> rake routes
+    GET  /a/:agency_id/reports/activity/tasks(.:format)
+    <mark>POST</mark> /a/:agency_id/reports/activity/tasks(.:format)
+    <mark>GET</mark>  /a/:agency_id/reports/activity/tasks/:id(.:format)
+</code>
+</pre>
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+class Reports::TasksController < ApplicationController
+  include ReportParameters
+
+  before_action :authenticate_user!, :whitelisted
+  before_action :set_task, only: :show
+
+  <mark class='fragment'>def create
+    @task = taskable.new(report_params)
+    <mark>ReportWorker</mark>.perform_async(@task.id) if @task.save
+    respond_with @task, <mark class='fragment'>status: :accepted</mark>, template: 'reports/tasks/show'
+  end</mark>
+
+  <mark class='fragment'>def show
+    respond_with(@task)
+  end</mark>
+
+  private
+
+  def taskable
+    /\/reports.*(?=\/tasks)/.match(request.path).to_s.classify.constantize
+  end
+
+  def whitelisted
+    unless Rails.env.development?
+      head :unauthorized unless Report.subclasses.include?(taskable)
+    end
+  end
+
+  def set_task
+    @task = taskable.find_by!(masked_id: params[:id])
+    authorize! :read, @task
+  end
+end</code></pre>
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+class ReportWorker
+  include Sidekiq::Worker
+
+  attr_reader :report
+
+  def perform(report_id)
+    progress(10) { @report = Report.find(report_id).<mark>decorate</mark> }
+    file = Tempfile.new(filename, TMPDIR)
+    begin
+      progress 75 do
+        file.binmode
+        file.write <mark>renderer.render</mark>
+      end
+
+      progress 100 do
+        report.output = file.flush
+        report.complete
+      end
+    ensure
+      file.close
+      file.unlink
+    end
+  end
+
+  private
+
+  def renderer
+    renderer_class.new(template, report: @report)
+  end
+
+  def renderer_class
+    "#{report.format.to_s.classify}Renderer".constantize
+  end
+
+  def template
+    "#{report.model_name.collection}/show"
+  end
+
+  def filename
+    ["#{report.id}_#{Date.today.iso8601}", ".#{report.format}"]
+  end
+
+  def progress(completed, &block)
+    value = block.call
+    report.update_attributes(progress: completed)
+    value
+  end
+end</code></pre>
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+class PdfRenderer
+  include RenderAnywhere
+
+  def initialize(<mark class='fragment'>template, locals = {}</mark>)
+    # ...
+  end
+
+  <mark class='fragment'>def render
+    WickedPdf.new.pdf_from_string(<mark class='fragment'>render_to_string</mark>)
+  end</mark>
+
+  <mark class='fragment'>def render_to_string
+    view.render template: @template, layout: 'layouts/pdf.html', locals: @locals
+  end</mark>
+end</code></pre>
+        </section>
+
+<!--         <section data-markdown>
+          <script type="text/template">
+            ```ruby
+            class Reports::DownloadsController < ApplicationController
+              before_action :authenticate_user!
+              before_action :set_download, only: [:show]
+
+              def show
+                redirect_to @download.secure_url
+              end
+
+              private
+
+              def set_download
+                @download = Report.find_by!(masked_id: params[:id], state: :completed)
+                authorize! :read, @download
+              end
+            end
+            ```
+          </script>
+        </section> -->
+
+        <section data-background="#3887be" data-background-transition="zoom">
+          <h2>Wrapping up</h2>
+        </section>
+
+        <section>
+<pre>
+<code data-trim data-noescape>
+> rails generate report Reports::Activity
+</code>
+<code data-trim data-noescape class='fragment'>
+create  <mark>app/models/reports/activity.rb</mark>
+create  <mark>app/decorators/reports/activity_decorator.rb</mark>
+create  spec/decorators/reports/activity_decorator_spec.rb
+create  app/controllers/reports/activities_controller.rb
+create  spec/controllers/reports/activities_controller_spec.rb
+create  <mark>app/views/reports/activities/show.json.jbuilder</mark>
+create  <mark>app/views/reports/activities/show.pdf.erb</mark>
+insert  config/routes.rb
+</code>
+</pre>
+        </section>
+
+        <section data-background="#3887be" data-background-transition="zoom">
+          <h2>Other ideas</h2>
+        </section>
+
+        <section data-background-image='img/scenic.png'>
+        </section>
+
+        <section data-background-image='img/upcase.png'>
+        </section>
+
+        <section data-background-image='img/queries.png'>
+        </section>
+
+        <section data-background-image='img/wiki.png'>
+        </section>
+
+        <section data-background-transition="zoom">
+          <h2>Thanks <span class='success'>:)</span></h2>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true },
+          { src: 'plugin/notes/notes.js', async: true }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
